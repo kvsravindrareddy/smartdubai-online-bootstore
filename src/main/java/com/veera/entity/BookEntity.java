@@ -6,6 +6,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,6 +23,7 @@ import lombok.Setter;
 public class BookEntity {
 	@Id
 	@GeneratedValue
+	@JsonIgnore
 	private long id;
 	private String name;
 	private String description;

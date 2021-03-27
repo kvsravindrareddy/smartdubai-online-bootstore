@@ -65,19 +65,20 @@ public class PromoCodeService {
 	public PromoData getPromoCodeData(String promoCode) {
 		PromoData promoData = null;
 		Optional<PromoEntity> promoEntity = promoRepo.findByPromoCode(promoCode);
-		if(promoEntity.isPresent())
-		{
+		if (promoEntity.isPresent()) {
 			String json = gson.toJson(promoEntity.get());
-			promoData = gson.fromJson(json, PromoData.class);
+			Gson gsonDate = new GsonBuilder().registerTypeAdapter(Date.class, new JsonDateDeserializer()).create();
+			;
+			promoData = gsonDate.fromJson(json, PromoData.class);
 		}
 		return promoData;
 	}
 
+	@Transactional
 	public PromoData updatePromoCode(PromoData promoData) {
 		PromoData promoDataResp = null;
 		Optional<PromoEntity> promoEntityOpt = promoRepo.findByPromoCode(promoData.getPromoCode());
-		if(promoEntityOpt.isPresent())
-		{
+		if (promoEntityOpt.isPresent()) {
 			PromoEntity promoEntity = promoEntityOpt.get();
 			PromoEntity inputObj = new PromoEntity();
 			inputObj.setId(promoEntity.getId());
@@ -85,8 +86,10 @@ public class PromoCodeService {
 			inputObj.setPromoCode(promoEntity.getPromoCode());
 			inputObj.setValidityDate(promoData.getValidityDate());
 			String json = gson.toJson(promoRepo.save(inputObj));
-			promoDataResp = gson.fromJson(json, PromoData.class);
-			log.debug("...........Promo code update successfully for "+promoData.getPromoCode());
+			Gson gsonDate = new GsonBuilder().registerTypeAdapter(Date.class, new JsonDateDeserializer()).create();
+			;
+			promoDataResp = gsonDate.fromJson(json, PromoData.class);
+			log.debug("...........Promo code update successfully for " + promoData.getPromoCode());
 		}
 		return promoDataResp;
 	}

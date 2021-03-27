@@ -52,7 +52,7 @@ public class OnlineBookStoreController {
 	}
 
 	@PutMapping("/updatebookdetails")
-	public BookEntity updateBookDetailsByIsbn(@RequestBody BookEntity bookData) {
+	public BookData updateBookDetailsByIsbn(@RequestBody BookData bookData) {
 		return onlineBookStoreService.updateBookDetailsByIsbn(bookData);
 	}
 
@@ -60,5 +60,23 @@ public class OnlineBookStoreController {
 	public List<BookData> checkoutBooks(@RequestParam("isbns") List<String> isbns,
 			@RequestParam("promoCode") String promoCode) {
 		return onlineBookStoreService.checkoutBooks(isbns, promoCode);
+	}
+	
+	@GetMapping("/showbookprice")
+	public BookData showBookPrice(@RequestParam("isbn")String isbn)
+	{
+		return onlineBookStoreService.showBookPrice(isbn);
+	}
+	
+	@DeleteMapping("/deleteallbooks")
+	public void deleteAllBooks()
+	{
+		onlineBookStoreService.deleteAllBooks();
+	}
+	
+	@DeleteMapping("/deleteselectedbooks")
+	public void deleteSelectedBooks(@RequestParam("isns[]")String[] isbns)
+	{
+		onlineBookStoreService.deleteSelectedBooks(isbns);
 	}
 }
