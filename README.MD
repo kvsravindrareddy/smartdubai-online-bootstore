@@ -1,5 +1,6 @@
 Step 1: Do the maven build using 
-	./mvnw clean install
+	Linux or Mac: ./mvnw clean install
+	Windows: mvnw.cmd clean install
 	
 Step 2: build the docker file
 	docker build -t smartdubai-online-bootstore .

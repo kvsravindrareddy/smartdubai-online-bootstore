@@ -11,9 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
+import com.veera.data.BookCheckoutResponse;
 import com.veera.data.BookData;
+import com.veera.data.BooksCheckoutResponse;
 import com.veera.entity.BookEntity;
+import com.veera.entity.PromoEntity;
+import com.veera.exception.PromoNotFoundException;
+import com.veera.helper.BookStoreCommons;
 import com.veera.repo.BookDataRepo;
+import com.veera.repo.PromoRepo;
 
 /**
  * Online Book store to handle the business logic
@@ -25,6 +31,9 @@ public class OnlineBookStoreService {
 
 	@Autowired
 	private BookDataRepo bookDataRepo;
+	
+	@Autowired
+	private PromoRepo promoRepo;
 	
 	@Autowired
 	private Gson gson;
@@ -89,8 +98,28 @@ public class OnlineBookStoreService {
 	 * @param promoCode
 	 * @return
 	 */
-	public List<BookData> checkoutBooks(List<String> isbns, String promoCode) {
-		return null;
+	public BooksCheckoutResponse checkoutBooks(String[] isbns, String promoCode) {
+		
+		Optional<PromoEntity> promoData = promoRepo.findByPromoCode(promoCode);
+		if(!promoData.isPresent())
+		{
+			throw new PromoNotFoundException("Invalid promo code or promo is not valid");
+		}
+		
+		BooksCheckoutResponse booksResponse = new BooksCheckoutResponse();
+		List<BookCheckoutResponse> bookResponseList = bookDataRepo.bookCheckoutResponse(isbns, promoCode);
+		double totalPriceBeforeDiscount=0;
+		for(BookCheckoutResponse checkoutResponse : bookResponseList)
+		{
+			totalPriceBeforeDiscount = totalPriceBeforeDiscount+checkoutResponse.getPrice();
+		}
+		double s = 100-BookStoreCommons.numberFromString(promoCode);
+		double totalPriceAfterDiscount = (s*totalPriceBeforeDiscount)/100;
+		booksResponse.setTotalPriceBeforeDiscount(totalPriceBeforeDiscount);
+		booksResponse.setMaxDiscountedPrice(totalPriceBeforeDiscount-totalPriceAfterDiscount);
+		booksResponse.setTotalPriceAfterDiscount(totalPriceAfterDiscount);
+		booksResponse.setBooksDetails(bookResponseList);
+		return booksResponse;
 	}
 
 	/**
@@ -124,5 +153,10 @@ public class OnlineBookStoreService {
 	public void deleteSelectedBooks(String[] isbns) {
 		bookDataRepo.deleteSelectedBooks(isbns);
 	}
+	
+//	public static void main(String[] args) {
+//		double s = 100-10;
+//		System.out.println((s*100)/100);
+//	}
 
 }

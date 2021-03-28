@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.veera.data.BookData;
+import com.veera.data.BooksCheckoutResponse;
 import com.veera.entity.BookEntity;
 import com.veera.service.OnlineBookStoreService;
 
@@ -57,8 +58,8 @@ public class OnlineBookStoreController {
 	}
 
 	@GetMapping("/checkoutbooks")
-	public List<BookData> checkoutBooks(@RequestParam("isbns") List<String> isbns,
-			@RequestParam("promoCode") String promoCode) {
+	public BooksCheckoutResponse checkoutBooks(@RequestParam("isbns[]")String[] isbns,
+			@RequestParam(value="promoCode", required = false) String promoCode) {
 		return onlineBookStoreService.checkoutBooks(isbns, promoCode);
 	}
 	
@@ -75,7 +76,7 @@ public class OnlineBookStoreController {
 	}
 	
 	@DeleteMapping("/deleteselectedbooks")
-	public void deleteSelectedBooks(@RequestParam("isns[]")String[] isbns)
+	public void deleteSelectedBooks(@RequestParam("isbns[]")String[] isbns)
 	{
 		onlineBookStoreService.deleteSelectedBooks(isbns);
 	}
