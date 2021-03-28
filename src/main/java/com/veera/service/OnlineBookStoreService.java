@@ -16,6 +16,7 @@ import com.veera.data.BookData;
 import com.veera.data.BooksCheckoutResponse;
 import com.veera.entity.BookEntity;
 import com.veera.entity.PromoEntity;
+import com.veera.exception.NoDataFoundException;
 import com.veera.exception.PromoNotFoundException;
 import com.veera.helper.BookStoreCommons;
 import com.veera.repo.BookDataRepo;
@@ -105,23 +106,31 @@ public class OnlineBookStoreService {
 	 * @return
 	 */
 	public BooksCheckoutResponse checkoutBooks(String[] isbns, String promoCode) {
-
-		Optional<PromoEntity> promoData = promoRepo.findByPromoCode(promoCode);
-		if (!promoData.isPresent() || promoData.get().getValidityDate().before(BookStoreCommons.currentDate())) {
-			log.error("Invalid promo code or promo is expired : " + promoData.isPresent());
-			throw new PromoNotFoundException("Invalid promo code or promo is expired");
-		}
-
-		BooksCheckoutResponse booksResponse = new BooksCheckoutResponse();
-		List<BookCheckoutResponse> bookResponseList = bookDataRepo.bookCheckoutResponse(isbns, promoCode);
 		double totalPriceBeforeDiscount = 0;
+		double totalPriceAfterDiscount = 0;
+		double s = 0;
+		if (null != promoCode) {
+			Optional<PromoEntity> promoData = promoRepo.findByPromoCode(promoCode);
+			if (!promoData.isPresent() || promoData.get().getValidityDate().before(BookStoreCommons.currentDate())) {
+				log.error("Invalid promo code or promo is expired : " + promoData.isPresent());
+				throw new PromoNotFoundException("Invalid promo code or promo is expired");
+			}
+		}
+		s = 100 - BookStoreCommons.numberFromString(promoCode);
+		System.out.println("......totalPriceAfterDiscount...1.." + totalPriceAfterDiscount);
+		BooksCheckoutResponse booksResponse = new BooksCheckoutResponse();
+		List<BookCheckoutResponse> bookResponseList = bookDataRepo.bookCheckoutResponse(isbns);
+		if (bookResponseList.size() == 0) {
+			throw new NoDataFoundException("No Data Found");
+		}
+		System.out.println("........bookResponseList....." + bookResponseList.size());
 		for (BookCheckoutResponse checkoutResponse : bookResponseList) {
 			totalPriceBeforeDiscount = totalPriceBeforeDiscount + checkoutResponse.getPrice();
 		}
-		double s = 100 - BookStoreCommons.numberFromString(promoCode);
-		double totalPriceAfterDiscount = (s * totalPriceBeforeDiscount) / 100;
+		totalPriceAfterDiscount = (s * totalPriceBeforeDiscount) / 100;
 		booksResponse.setTotalPriceBeforeDiscount(totalPriceBeforeDiscount);
 		booksResponse.setMaxDiscountedPrice(totalPriceBeforeDiscount - totalPriceAfterDiscount);
+		System.out.println("......totalPriceAfterDiscount...2.." + totalPriceAfterDiscount);
 		booksResponse.setTotalPriceAfterDiscount(totalPriceAfterDiscount);
 		booksResponse.setBooksDetails(bookResponseList);
 		return booksResponse;

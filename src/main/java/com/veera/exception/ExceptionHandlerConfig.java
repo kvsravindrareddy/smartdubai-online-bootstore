@@ -19,24 +19,36 @@ public class ExceptionHandlerConfig extends ResponseEntityExceptionHandler {
 	/**
 	 * Custom Exception handler method to handle if the service not found
 	 * 
-	 * @param ServiceUnavilableException
+	 * @param InvalidInputException
 	 * @return ResponseEntity<ErrorDetails>
 	 */
 	@ExceptionHandler(InvalidInputException.class)
 	public ResponseEntity<ErrorDetails> handleComicServiceNotFoundException(InvalidInputException e) {
-		ErrorDetails error = new ErrorDetails(601, e.toString());
+		ErrorDetails error = new ErrorDetails(601, e.getMsg());
 		return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
 	}
 	
 	/**
 	 * Custom Exception handler method to handle if the service not found
 	 * 
-	 * @param ServiceUnavilableException
+	 * @param PromoNotFoundException
 	 * @return ResponseEntity<ErrorDetails>
 	 */
 	@ExceptionHandler(PromoNotFoundException.class)
 	public ResponseEntity<ErrorDetails> handlePromoCodeNotFoundException(PromoNotFoundException e) {
-		ErrorDetails error = new ErrorDetails(602, e.toString());
+		ErrorDetails error = new ErrorDetails(602, e.getMsg());
+		return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+	}
+	
+	/**
+	 * Custom Exception handler method to handle if the service not found
+	 * 
+	 * @param NoDataFoundException
+	 * @return ResponseEntity<ErrorDetails>
+	 */
+	@ExceptionHandler(NoDataFoundException.class)
+	public ResponseEntity<ErrorDetails> handleNoDataFoundException(NoDataFoundException e) {
+		ErrorDetails error = new ErrorDetails(603, e.getMsg());
 		return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
 	}
 }

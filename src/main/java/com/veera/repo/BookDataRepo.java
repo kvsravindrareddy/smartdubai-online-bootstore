@@ -38,7 +38,6 @@ public interface BookDataRepo extends CrudRepository<BookEntity, Long> {
 //	and (bpt.promo_code is null or bpt.promo_code = 'string');
 
 	@Query("SELECT new com.veera.data.BookCheckoutResponse(bdt.name, bdt.description, bdt.author,bdt.bookType, bdt.price, bdt.isbn, bpt.promoCode"
-			+ ") FROM BookEntity bdt, PromoEntity bpt where bdt.bookType=bpt.bookType and bdt.isbn in (:isbns) and (bpt.promoCode is null or bpt.promoCode=:promoCode)")
-	List<BookCheckoutResponse> bookCheckoutResponse(@Param("isbns") String[] isbns,
-			@Param("promoCode") String promoCode);
+			+ ") FROM BookEntity bdt, PromoEntity bpt where bdt.bookType=bpt.bookType and bdt.isbn in (:isbns)")
+	List<BookCheckoutResponse> bookCheckoutResponse(@Param("isbns") String[] isbns);
 }
