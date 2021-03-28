@@ -13,6 +13,7 @@ import springfox.documentation.spring.web.plugins.Docket;
 
 /**
  * Swagger configuration class to generate API documentation
+ * 
  * @author Veera.Shankara
  *
  */
@@ -25,8 +26,7 @@ public class SwaggerConfig {
 	 */
 	@Bean
 	public Docket apiDoc() {
-		return new Docket(DocumentationType.SWAGGER_2).select()
-				.apis(RequestHandlerSelectors.basePackage("com.veera"))
+		return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.basePackage("com.veera"))
 				.paths(PathSelectors.any()).build().apiInfo(metaData());
 	}
 
@@ -38,7 +38,8 @@ public class SwaggerConfig {
 	private ApiInfo metaData() {
 		return new ApiInfoBuilder().title("SmartDubai - Veera")
 				.description("\"SmartDubai Online Bookstore Interview Assessment\"").version("1.0.0")
-				.contact(new Contact("+91-7353122882", "www.google.com", "kvsravindrareddy@gmail.com"))
+				.contact(new Contact("Veera Shankara Ravindra Reddy Kakarla", "www.google.com",
+						"kvsravindrareddy@gmail.com"))
 				.build();
 	}
 }
